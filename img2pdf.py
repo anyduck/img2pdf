@@ -10,6 +10,7 @@ SUFFIXES = (
 )
 
 IS_AUTO_PORTAIT_MODE = True
+OUTPUT = 'output.pdf'
 
 
 def get_images(folder: Path) -> list[Image.Image]:
@@ -23,8 +24,13 @@ def convert2portrait(images: list[Image.Image]) -> None:
             image.rotate(-90)  # TODO: detection of -90, 0, 90, 180
 
 
+def save2pdf(images: list[Image.Image], path: Path) -> None:
+    images[0].save(path, save_all=True, append_images=images[1:])
+
+
 if __name__ == '__main__':
     folder = Path(input('Enter folder: '))
     images = get_images(folder)
     if IS_AUTO_PORTAIT_MODE:
         convert2portrait(images)
+    save2pdf(images, OUTPUT)
