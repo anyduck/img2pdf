@@ -16,10 +16,18 @@ def get_images(folder: Path) -> list[Image.Image]:
             if path.is_file() and path.suffix in SUFFIXES]
 
 
-def convert2portrait(images: list[Image.Image]) -> None:
+def find_out_rotation(image: Image.Image) -> int:
+    if image.width > image.height:  # TODO: detection of 0, 90, 180, 270
+        return Image.ROTATE_90
+
+
+def convert2portrait(images: list[Image.Image]) -> list[Image.Image]:
+    result = []
     for image in images:
-        if image.width > image.height:
-            image.rotate(-90)  # TODO: detection of -90, 0, 90, 180
+        if (rotation := find_out_rotation(image)):
+            image = image.transpose(rotation)
+        result.append(image)
+    return result
 
 
 def save2pdf(images: list[Image.Image], path: Path, quality: int) -> None:
@@ -30,7 +38,7 @@ def save2pdf(images: list[Image.Image], path: Path, quality: int) -> None:
 def main(folder: Path, output: Path, quality: int, portrait: bool) -> None:
     images = get_images(folder)
     if portrait:
-        convert2portrait(images)
+        images = convert2portrait(images)
     save2pdf(images, output, quality)
 
 
