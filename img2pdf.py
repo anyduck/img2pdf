@@ -1,6 +1,7 @@
 #!/usr/bin/python
 from pathlib import Path
 from PIL import Image
+from argparse import ArgumentParser
 
 
 SUFFIXES = (
@@ -8,9 +9,6 @@ SUFFIXES = (
     '.jpg',
     '.jpeg'
 )
-
-IS_AUTO_PORTAIT_MODE = True
-OUTPUT = 'output.pdf'
 
 
 def get_images(folder: Path) -> list[Image.Image]:
@@ -29,8 +27,15 @@ def save2pdf(images: list[Image.Image], path: Path) -> None:
 
 
 if __name__ == '__main__':
-    folder = Path(input('Enter folder: '))
-    images = get_images(folder)
-    if IS_AUTO_PORTAIT_MODE:
+    parser = ArgumentParser(description='Convert photos to pdf')
+    parser.add_argument('folder', type=Path, help='folder with photos')
+    parser.add_argument('-o', '--output', type=Path, default='output.pdf',
+                        help='output pdf path')
+    parser.add_argument('-p', '--portrait', action='store_true',
+                        help='convert photos to portrait orientation')
+    args = parser.parse_args()
+
+    images = get_images(args.folder)
+    if args.portrait:
         convert2portrait(images)
-    save2pdf(images, OUTPUT)
+    save2pdf(images, args.output)
